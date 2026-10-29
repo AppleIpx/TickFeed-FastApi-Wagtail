@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=tickfeed
+POSTGRES_USER=tickfeed_314dfbcf
+POSTGRES_PASSWORD=68494779eec6c498db964dc26c4373cd369620843ad9728b

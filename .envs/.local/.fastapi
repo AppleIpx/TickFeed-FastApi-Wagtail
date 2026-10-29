@@ -1,0 +1,4 @@
+# General
+# ------------------------------------------------------------------------------
+FASTAPI_ENV=development
+PROJECT_NAME=TickFeed

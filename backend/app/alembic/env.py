@@ -31,7 +31,7 @@ target_metadata = SQLModel.metadata
 
 
 def get_url():
-    return str(settings.DATABASE_URL)
+    return settings.database_url
 
 
 def run_migrations_offline():

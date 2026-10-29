@@ -43,29 +43,25 @@ jobs:
   pytest:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      COMPOSE_FILE: docker-compose.test.yml
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Generate .env
-        run: |
-          POSTGRES_PASSWORD="$(openssl rand -hex 24)"
-          echo "::add-mask::$POSTGRES_PASSWORD"
-          {
-            echo "PROJECT_NAME=TickFeed"
-            echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD"
-          } > .env
-      - name: Reset any leftover containers
+      - name: Reset any leftover test containers
         run: docker compose down -v --remove-orphans
-      - name: Build containers
-        run: docker compose build backend
-      - name: Start db
-        run: docker compose up -d --wait db
+      - name: Build test containers
+        run: docker compose build
+      - name: Start postgres
+        run: docker compose up -d --wait postgres
+      - name: Show container status
+        run: docker compose ps
       - name: Migrate DB
-        run: docker compose run --rm backend bash scripts/prestart.sh
+        run: docker compose run --rm fastapi alembic upgrade head
       - name: Run pytest
-        run: docker compose run --rm -v "$PWD/backend/tests:/app/backend/tests" backend bash scripts/tests-start.sh
+        run: docker compose run --rm fastapi bash scripts/tests-start.sh
       - name: Tear down containers
         if: always()
         run: docker compose down -v --remove-orphans

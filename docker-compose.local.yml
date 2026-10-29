@@ -1,0 +1,47 @@
+volumes:
+  tickfeed_local_postgres_data: {}
+  tickfeed_local_postgres_data_backups: {}
+
+
+services:
+  fastapi: &fastapi
+    build:
+      context: .
+      dockerfile: ./compose/local/fastapi/Dockerfile
+    image: tickfeed_local_fastapi
+    container_name: tickfeed_local_fastapi
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - /app/.venv
+      - .:/app:z
+    env_file:
+      - ./.envs/.local/.fastapi
+      - ./.envs/.local/.postgres
+    ports:
+      - '8000:8000'
+    command: /start
+    healthcheck:
+      test: ['CMD', 'python', '-c', 'import urllib.request; urllib.request.urlopen("http://localhost:8000/api/v1/utils/health-check/")']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: tickfeed_production_postgres
+    container_name: tickfeed_local_postgres
+    volumes:
+      - tickfeed_local_postgres_data:/var/lib/postgresql/18/docker
+      - tickfeed_local_postgres_data_backups:/backups
+    env_file:
+      - ./.envs/.local/.postgres
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 5s
+      timeout: 5s
+      retries: 10

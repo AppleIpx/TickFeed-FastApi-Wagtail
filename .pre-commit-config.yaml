@@ -5,12 +5,19 @@ repos:
     rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # v6.0.0
     hooks:
       - id: check-added-large-files
+      - id: check-json
       - id: check-toml
       - id: check-yaml
         args:
           - --unsafe
       - id: end-of-file-fixer
       - id: trailing-whitespace
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: debug-statements
+      - id: check-builtin-literals
+      - id: check-docstring-first
+      - id: detect-private-key
   - repo: https://github.com/crate-ci/typos
     rev: 00f422f3b19c57bc6338715ebfe3316d38768461 # frozen: v1.50.3
     hooks:
@@ -31,6 +38,13 @@ repos:
         require_serial: true
         language: unsupported
         types_or: [python, markdown]
+
+      - id: local-pyproject-fmt
+        name: pyproject-fmt
+        entry: uv run pyproject-fmt
+        require_serial: true
+        language: unsupported
+        files: (^|/)pyproject\.toml$
 
       - id: local-mypy
         name: mypy check

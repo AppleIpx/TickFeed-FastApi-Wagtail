@@ -1,0 +1,33 @@
+name: tickfeed_test
+
+volumes:
+  tickfeed_test_postgres_data: {}
+
+
+services:
+  fastapi:
+    build:
+      context: .
+      dockerfile: ./compose/local/fastapi/Dockerfile
+    image: tickfeed_test_fastapi
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./.envs/.local/.fastapi
+      - ./.envs/.local/.postgres
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: tickfeed_test_postgres
+    volumes:
+      - tickfeed_test_postgres_data:/var/lib/postgresql/18/docker
+    env_file:
+      - ./.envs/.local/.postgres
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 5s
+      timeout: 5s
+      retries: 10

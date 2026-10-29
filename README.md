@@ -10,7 +10,7 @@
 docker compose watch          # db + backend (fastapi dev на :8000)
 ```
 
-Переменные окружения берутся из `.env` в корне репозитория (`PROJECT_NAME`, `POSTGRES_PASSWORD`, `DATABASE_URL`).
+Переменные окружения берутся из `.env` в корне репозитория. Он не коммитится: скопируйте `.env.example` в `.env` и задайте пароль.
 
 ## Проверки
 

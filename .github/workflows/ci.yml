@@ -48,6 +48,14 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Generate .env
+        run: |
+          POSTGRES_PASSWORD="$(openssl rand -hex 24)"
+          echo "::add-mask::$POSTGRES_PASSWORD"
+          {
+            echo "PROJECT_NAME=TickFeed"
+            echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD"
+          } > .env
       - name: Reset any leftover containers
         run: docker compose down -v --remove-orphans
       - name: Build containers
